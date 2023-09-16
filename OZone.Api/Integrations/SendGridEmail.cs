@@ -1,7 +1,7 @@
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace OZone.Api.Services;
+namespace OZone.Api.Integrations;
 
 public interface IEmailSender
 {

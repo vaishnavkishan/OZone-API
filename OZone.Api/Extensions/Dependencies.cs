@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OZone.Api.Domain;
+using OZone.Api.Integrations;
 using OZone.Api.Services;
 
 namespace OZone.Api.Extensions;
@@ -53,6 +54,7 @@ public static class Dependencies
     {
         services.AddScoped<IEmailSender, SendGridEmail>();
         services.AddScoped<IEventService, EventService>();
+        services.AddScoped<IOpenAiIntegration, OpenAiIntegration>();
     }
 
 }

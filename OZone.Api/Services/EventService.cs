@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OZone.Api.Domain;
 using OZone.Api.Domain.Models;
+using OZone.Api.Integrations;
 
 namespace OZone.Api.Services;
 

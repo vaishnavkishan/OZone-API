@@ -1,24 +1,37 @@
 using System.Text;
 using System.Text.Json;
 
-namespace OZone.Api.Services;
+namespace OZone.Api.Integrations;
 
-public class OpenAiIntegration
+public interface IOpenAiIntegration
 {
-    private static string? GetResponseFromOpenAI(string? question)
+    Task<string?> GetAiSuggestion(string? question);
+}
+
+public class OpenAiIntegration : IOpenAiIntegration
+{
+    private readonly ILogger<OpenAiIntegration> _logger;
+    private readonly string _apiKey;
+
+    public OpenAiIntegration(ILogger<OpenAiIntegration> logger, IConfiguration config)
     {
-        var apiKey = "{put_api_key}";
+        _logger = logger;
+        _apiKey = config.GetValue<string>("OpenAI:Key")!;
+    }
+
+    public async Task<string?> GetAiSuggestion(string? question)
+    {
         var prompt = $"{question}";
 
         var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
 
         var request = new HttpRequestMessage(HttpMethod.Post, $"https://api.openai.com/v1/completions");
         request.Content = new StringContent(JsonSerializer.Serialize(
             new OpenAI_Request
             {
                 model = "text-davinci-003",
-                prompt = "Computer programmer Joke about:"+prompt,
+                prompt = "Computer programmer Joke about:" + prompt,
                 temperature = 1,
                 max_tokens = 128,
                 top_p = 1,
@@ -26,15 +39,16 @@ public class OpenAiIntegration
                 presence_penalty = 0
             }), Encoding.UTF8, "application/json");
 
-        var response = httpClient.SendAsync(request).Result;
+        var response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        var responseString = response.Content.ReadAsStringAsync().Result;
+        var responseString = await response.Content.ReadAsStringAsync();
         var responseJson = JsonSerializer.Deserialize<OpenAI_Response>(responseString);
 
         return responseJson?.choices?[0].text;
     }
 }
+
 class OpenAI_Request
 {
     public string? model { get; set; }
