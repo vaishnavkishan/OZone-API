@@ -28,7 +28,7 @@ public class SubscriptionsController : ControllerBase
     /// <summary>
     /// Subscribe a user to an event
     /// </summary>
-    /// <param name="subscription">Subscription details</param>
+    /// <param name="req">Subscription details</param>
     /// <returns>Created subscription</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OZone.Api.Domain;
 using OZone.Api.Domain.Models;
+using OZone.Api.Services;
 
 namespace OZone.Api.Controllers;
 
@@ -9,24 +10,34 @@ namespace OZone.Api.Controllers;
 public class EventsController : ControllerBase
 {
     private readonly ILogger<EventsController> _logger;
-    private readonly EventContext _db;
+    private readonly IEventService _eventService;
 
-    public EventsController(ILogger<EventsController> logger, EventContext db)
+    public EventsController(ILogger<EventsController> logger, IEventService eventService)
     {
         _logger = logger;
-        _db = db;
+        _eventService = eventService;
     }
 
+    /// <summary>
+    /// Get events by kind
+    /// </summary>
+    /// <param name="kind">Kind of events to return. 'upcoming', 'past'.</param>
+    /// <returns>Returns filtered events if kind is provided. Otherwise returns all events.</returns>
     [HttpGet]
-    public IEnumerable<Event> Get(string? kind)
+    public async Task<IActionResult> Get(string? kind)
     {
-        if (kind == "upcoming")
-            return _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) > 0).ToList();
-
-        if (kind == "past")
-            return _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).ToList();
-
-        return _db.Events.ToList();
+        return Ok(await _eventService.Get(kind));
+    }
+    
+    /// <summary>
+    /// Get event by id
+    /// </summary>
+    /// <param name="id">Unique Guid of the event</param>
+    /// <returns>Event details</returns>
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(Guid id)
+    {
+        return Ok(await _eventService.GetById(id));
     }
 
     /// <summary>
@@ -36,10 +47,8 @@ public class EventsController : ControllerBase
     /// <returns>Newly created event</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public Event Create(Event createEvent)
+    public async Task<IActionResult> Create(Event createEvent)
     {
-        var eventT = _db.Events.Add(createEvent);
-        _db.SaveChanges();
-        return eventT.Entity;
+        return Ok(await _eventService.Create(createEvent));
     }
 }
