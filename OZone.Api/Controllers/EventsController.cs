@@ -18,13 +18,17 @@ public class EventsController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<Event> Get(string kind)
+    public IEnumerable<Event> Get(string? kind)
     {
+        if (kind == "upcoming")
+            return _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) > 0).ToList();
+        
+        if (kind == "past")
+            return _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).ToList();
+        
         return _db.Events.ToList();
-        // if(kind == "upcoming")
-        // return _db.Events.Where(x=>x.Date.CompareTo(DateTime.UtcNow)).ToList();
     }
-    
+
     /// <summary>
     /// Create an event
     /// </summary>
@@ -34,7 +38,7 @@ public class EventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     public Event Create(Event createEvent)
     {
-        var eventT= _db.Events.Add(createEvent);
+        var eventT = _db.Events.Add(createEvent);
         _db.SaveChanges();
         return _db.Events.Where(x => x.Id == eventT.Entity.Id).FirstOrDefault();
     }
