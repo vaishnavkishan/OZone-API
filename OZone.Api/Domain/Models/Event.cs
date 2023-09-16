@@ -20,4 +20,6 @@ public class Event
     public int Capacity { get; set; }
     public EType Type { get; set; }
     public string Tags { get; set; }= default!;
+
+    public List<Subscription> Subscriptions { get; set; } = new();
 }

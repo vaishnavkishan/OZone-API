@@ -22,10 +22,10 @@ public class EventsController : ControllerBase
     {
         if (kind == "upcoming")
             return _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) > 0).ToList();
-        
+
         if (kind == "past")
             return _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).ToList();
-        
+
         return _db.Events.ToList();
     }
 
@@ -40,6 +40,6 @@ public class EventsController : ControllerBase
     {
         var eventT = _db.Events.Add(createEvent);
         _db.SaveChanges();
-        return _db.Events.Where(x => x.Id == eventT.Entity.Id).FirstOrDefault();
+        return eventT.Entity;
     }
 }

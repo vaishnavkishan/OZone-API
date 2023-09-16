@@ -11,4 +11,6 @@ public class EventContext : DbContext
     }
     
     public DbSet<Event> Events { get; set; }= null!;
+    public DbSet<User> Users { get; set; }= null!;
+    public DbSet<Subscription> Subscriptions { get; set; }
 }
