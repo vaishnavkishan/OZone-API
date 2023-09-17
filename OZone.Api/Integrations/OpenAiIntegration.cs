@@ -45,7 +45,10 @@ public class OpenAiIntegration : IOpenAiIntegration
         var responseString = await response.Content.ReadAsStringAsync();
         var responseJson = JsonSerializer.Deserialize<OpenAI_Response>(responseString);
 
-        return responseJson?.choices?[0].text!;
+        var suggestion= responseJson?.choices?[0].text!;
+        
+        _logger.LogInformation("Suggestion from Open AI:{suggestion}",suggestion);
+        return suggestion;
     }
 }
 

@@ -77,6 +77,7 @@ public static class Dependencies
         services.AddScoped<IOpenAiIntegration, OpenAiIntegration>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IEventNotificationService, EventNotificationService>();
+        services.AddScoped<ISuggestionService, SuggestionService>();
     }
 
 }
