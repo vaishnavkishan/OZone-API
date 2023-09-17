@@ -52,7 +52,7 @@ public class TimedHostedService : IHostedService, IDisposable
             var tasks = new List<Task>();
             foreach (var subscription in events.SelectMany(x => x.Subscriptions))
             {
-                tasks.Add(notificationService.SendEventNotifications(subscription.Event, subscription.User.Email));
+                tasks.Add(notificationService.SendReminderNotifications(subscription.Event, subscription.User.Email));
             }
 
             Task.WaitAll(tasks.ToArray());
