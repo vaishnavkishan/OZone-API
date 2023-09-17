@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using OZone.Api.Constants;
 using OZone.Api.Domain;
 using OZone.Api.Domain.Models;
 using OZone.Api.Integrations;
@@ -75,7 +76,7 @@ public class EventsController : ControllerBase
     public async Task<IActionResult> SuggestEvent(EventSuggestionRequest req)
     {
         var subs = await _eventService.GetSubscriptionsByEmail(req.Email);
-        var events = await _eventService.Get("upcoming");
+        var events = await _eventService.Get(EventKind.Upcoming);
         string? subscribedEvents = null;
         string? nonSubscribedEvents = null;
 

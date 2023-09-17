@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OZone.Api.Constants;
 using OZone.Api.Domain;
 using OZone.Api.Domain.Models;
 using OZone.Api.Integrations;
@@ -29,13 +30,13 @@ public class EventService : IEventService
 
     public async Task<IEnumerable<Event>> Get(string? kind)
     {
-        if (kind == "upcoming")
+        if (kind == EventKind.Upcoming)
             return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) > 0).OrderBy(x=>x.Date).ToListAsync();
 
-        if (kind == "past")
+        if (kind == EventKind.Past)
             return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).Take(20).OrderByDescending(x=>x.Date).ToListAsync();
         
-        if (kind == "archived")
+        if (kind == EventKind.Archived)
             return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).OrderByDescending(x=>x.Date).ToListAsync();
 
         return _db.Events.ToList();

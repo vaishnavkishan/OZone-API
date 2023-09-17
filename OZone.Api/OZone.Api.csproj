@@ -27,5 +27,11 @@
       <Folder Include="Domain\Repositories\" />
       <Folder Include="Repositories\" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="OZone.Api.UnitTests\obj\OZone.Api.UnitTests.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="OZone.Api.UnitTests\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="OZone.Api.UnitTests\obj\project.packagespec.json" />
+    </ItemGroup>
 
 </Project>
