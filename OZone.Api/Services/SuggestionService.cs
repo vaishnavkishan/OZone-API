@@ -70,7 +70,9 @@ public class SuggestionService : ISuggestionService
 
             foreach (var _ in serialized)
             {
-                suggestedEvents.Add(await _eventService.GetByName(_.Name));
+                var eventT = await _eventService.GetByName(_.Name);
+                eventT.Subscriptions = null!;
+                suggestedEvents.Add(eventT);
             }
         }
         catch (Exception ex)
