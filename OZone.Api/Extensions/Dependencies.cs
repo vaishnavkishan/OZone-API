@@ -75,6 +75,8 @@ public static class Dependencies
         services.AddScoped<IEmailSender, SendGridEmail>();
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IOpenAiIntegration, OpenAiIntegration>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<IEventNotificationService, EventNotificationService>();
     }
 
 }

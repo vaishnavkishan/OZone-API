@@ -28,7 +28,7 @@ public class SendGridEmail : IEmailSender
         {
             From = new EmailAddress(_from, "OZone Team"),
             Subject = subject,
-            PlainTextContent = body
+            HtmlContent = body
         };
         msg.AddTo(new EmailAddress(to));
         var response = await client.SendEmailAsync(msg);

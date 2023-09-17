@@ -21,7 +21,7 @@ public class EventServiceTests
             .Options;
 
         var loggerMock = new Mock<ILogger<EventService>>();
-        var emailSenderMock = new Mock<IEmailSender>();
+        var emailSenderMock = new Mock<IEventNotificationService>();
    
         dbContext = new EventContext(dbContextOptions);
         eventService = new EventService(loggerMock.Object, dbContext, emailSenderMock.Object);

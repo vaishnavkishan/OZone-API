@@ -82,8 +82,8 @@ public class EventsController : ControllerBase
 
         try
         {
-            subscribedEvents = string.Join(',', subs.Select(x => x.Event.Name));
-            events = events.Except(subs.Select(x => x.Event));
+            subscribedEvents = string.Join(',', subs.Select(x => x.Event!.Name));
+            events = events!.Except(subs.Select(x => x.Event));
             nonSubscribedEvents = string.Join(',', events.Select(x => x.Name));
         }
         catch (Exception ex)

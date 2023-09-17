@@ -9,7 +9,7 @@ namespace OZone.Api.Services;
 public interface IEventService
 {
     Task<IEnumerable<Event>> Get(string? kind);
-    Task<Event> GetById(Guid id);
+    Task<Event?> GetById(Guid id);
     Task<Event?> GetByName(string name);
     Task<Event> Create(Event createEvent);
     Task<IEnumerable<Subscription>> GetSubscriptionsByEmail(string email);
@@ -19,9 +19,9 @@ public class EventService : IEventService
 {
     private readonly ILogger<EventService> _logger;
     private readonly EventContext _db;
-    private readonly IEmailSender _emailSender;
+    private readonly IEventNotificationService _emailSender;
 
-    public EventService(ILogger<EventService> logger, EventContext db, IEmailSender emailSender)
+    public EventService(ILogger<EventService> logger, EventContext db, IEventNotificationService emailSender)
     {
         _logger = logger;
         _db = db;
@@ -31,13 +31,16 @@ public class EventService : IEventService
     public async Task<IEnumerable<Event>> Get(string? kind)
     {
         if (kind == EventKind.Upcoming)
-            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) > 0).OrderBy(x=>x.Date).ToListAsync();
+            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) > 0).OrderBy(x => x.Date)
+                .ToListAsync();
 
         if (kind == EventKind.Past)
-            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).Take(20).OrderByDescending(x=>x.Date).ToListAsync();
-        
+            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).Take(20)
+                .OrderByDescending(x => x.Date).ToListAsync();
+
         if (kind == EventKind.Archived)
-            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).OrderByDescending(x=>x.Date).ToListAsync();
+            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).OrderByDescending(x => x.Date)
+                .ToListAsync();
 
         return _db.Events.ToList();
     }
@@ -47,34 +50,23 @@ public class EventService : IEventService
         return await _db.Events.FindAsync(id);
     }
 
-    public async Task<Event?> GetByName(string name)
+    public Task<Event?> GetByName(string name)
     {
-        var eventT=  _db.Events.AsEnumerable().Where(x => x.Name.Equals(name,StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-        return eventT;
+        var eventT = _db.Events
+            .AsEnumerable()
+            .FirstOrDefault(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+
+        return Task.FromResult(eventT);
     }
 
     public async Task<Event> Create(Event createEvent)
     {
         var eventT = _db.Events.Add(createEvent);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
 
-        await SendNotifications(createEvent);
+        await _emailSender.SendEventNotifications(createEvent, createEvent.PersonOfContact);
+        await _emailSender.SendEventNotifications(createEvent, createEvent.Community);
         return eventT.Entity;
-    }
-
-    private async Task SendNotifications(Event createEvent)
-    {
-        string body = "New event details:"; //TODO: Add event details
-        string subject = $"A new event '{createEvent.Name}' is registered.";
-
-        try
-        {
-            await _emailSender.Send(createEvent.PersonOfContact, subject, body);
-        }
-        catch (ApplicationException ex)
-        {
-            _logger.LogError(ex, "Could not send email notification!");
-        }
     }
 
     public async Task<IEnumerable<Subscription>> GetSubscriptionsByEmail(string email)
@@ -82,8 +74,8 @@ public class EventService : IEventService
         var subs = _db.Subscriptions
             .Include(x => x.User)
             .Include(x => x.Event)
-            .Where(x => x.User.Email == email);
+            .Where(x => x.User!.Email == email);
 
-        return subs.ToList();
+        return await subs.ToListAsync();
     }
 }
