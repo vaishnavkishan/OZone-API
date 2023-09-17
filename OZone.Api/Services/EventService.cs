@@ -30,10 +30,13 @@ public class EventService : IEventService
     public async Task<IEnumerable<Event>> Get(string? kind)
     {
         if (kind == "upcoming")
-            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) > 0).ToListAsync();
+            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) > 0).OrderBy(x=>x.Date).ToListAsync();
 
         if (kind == "past")
-            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).ToListAsync();
+            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).Take(20).OrderByDescending(x=>x.Date).ToListAsync();
+        
+        if (kind == "archived")
+            return await _db.Events.Where(x => x.Date.CompareTo(DateTime.UtcNow) < 0).OrderByDescending(x=>x.Date).ToListAsync();
 
         return _db.Events.ToList();
     }
