@@ -69,14 +69,15 @@ public class EventsController : ControllerBase
             events.Add(await _eventService.Create(_));
         }
 
-        return Ok(events);
+        return Ok(EventResponse.Map(events));
     }
 
-    [HttpPost("suggest/event")]
+    [HttpPost("suggest")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> SuggestEvent(EventSuggestionRequest req)
     {
-        return Ok(await _suggestionService.SuggestEvent(req));
+        var events = await _suggestionService.SuggestEvent(req);
+        return Ok(EventResponse.Map(events));
     }
 
     [HttpPost("suggest/topic")]
