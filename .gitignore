@@ -6,7 +6,8 @@
 # Remove appsettings.Development.json so that it can contain secrets
 appsettings.Development.json
 
-# User-specific files
+# User-specific 
+*.DS_Store
 *.rsuser
 *.suo
 *.user
