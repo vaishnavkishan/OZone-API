@@ -31,7 +31,7 @@ public class OpenAiIntegration : IOpenAiIntegration
             new OpenAI_Request
             {
                 model = "text-davinci-003",
-                prompt = "Computer programmer Joke about:" + prompt,
+                prompt = prompt,
                 temperature = 1,
                 max_tokens = 128,
                 top_p = 1,

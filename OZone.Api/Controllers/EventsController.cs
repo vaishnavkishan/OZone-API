@@ -74,6 +74,7 @@ public class EventsController : ControllerBase
 
     [HttpPost("suggest")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [EnableRateLimiting("openAi")]
     public async Task<IActionResult> SuggestEvent(EventSuggestionRequest req)
     {
         var events = await _suggestionService.SuggestEvent(req);
@@ -82,6 +83,7 @@ public class EventsController : ControllerBase
 
     [HttpPost("suggest/topic")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [EnableRateLimiting("openAi")]
     public async Task<IActionResult> SuggestTopic(TopicSuggestionRequest req)
     {
         return Ok(await _suggestionService.SuggestTopic(req));
@@ -89,6 +91,7 @@ public class EventsController : ControllerBase
 
     [HttpPost("improve")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [EnableRateLimiting("openAi")]
     public async Task<IActionResult> ImproveText(TextSuggestionRequest req)
     {
         return Ok(await _suggestionService.ImproveEvent(req));

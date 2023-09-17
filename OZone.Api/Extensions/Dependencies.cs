@@ -7,6 +7,7 @@ using OZone.Api.Domain;
 using OZone.Api.Integrations;
 using OZone.Api.Models;
 using OZone.Api.Services;
+using Quartz;
 
 namespace OZone.Api.Extensions;
 
@@ -25,6 +26,8 @@ public static class Dependencies
         services.AddServices();
 
         services.AddRateLimit(config);
+        
+        services.AddHostedService<TimedHostedService>();
     }
 
     private static void AddRateLimit(this IServiceCollection services, IConfiguration config)
@@ -39,6 +42,12 @@ public static class Dependencies
                 options.Window = TimeSpan.FromSeconds(myOptions.Window);
                 options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                 options.QueueLimit = myOptions.QueueLimit;
+            }).AddFixedWindowLimiter(policyName: "openAi", options =>
+            {
+                options.PermitLimit = 5;
+                options.Window = TimeSpan.FromSeconds(10);
+                options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                options.QueueLimit = 1;
             }));
     }
 
