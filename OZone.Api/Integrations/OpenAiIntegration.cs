@@ -5,7 +5,7 @@ namespace OZone.Api.Integrations;
 
 public interface IOpenAiIntegration
 {
-    Task<string?> GetAiSuggestion(string? question);
+    Task<string> GetAiSuggestion(string? question);
 }
 
 public class OpenAiIntegration : IOpenAiIntegration
@@ -19,7 +19,7 @@ public class OpenAiIntegration : IOpenAiIntegration
         _apiKey = config.GetValue<string>("OpenAI:Key")!;
     }
 
-    public async Task<string?> GetAiSuggestion(string? question)
+    public async Task<string> GetAiSuggestion(string? question)
     {
         var prompt = $"{question}";
 
@@ -45,7 +45,7 @@ public class OpenAiIntegration : IOpenAiIntegration
         var responseString = await response.Content.ReadAsStringAsync();
         var responseJson = JsonSerializer.Deserialize<OpenAI_Response>(responseString);
 
-        return responseJson?.choices?[0].text;
+        return responseJson?.choices?[0].text!;
     }
 }
 

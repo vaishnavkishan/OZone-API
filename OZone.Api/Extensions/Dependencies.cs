@@ -1,15 +1,18 @@
 using System.Reflection;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OZone.Api.Domain;
 using OZone.Api.Integrations;
+using OZone.Api.Models;
 using OZone.Api.Services;
 
 namespace OZone.Api.Extensions;
 
 public static class Dependencies
 {
-    public static void RegisterDependencies(this IServiceCollection services)
+    public static void RegisterDependencies(this IServiceCollection services, IConfiguration config)
     {
         services.AddControllers();
 
@@ -20,6 +23,23 @@ public static class Dependencies
         services.AddCors();
 
         services.AddServices();
+
+        services.AddRateLimit(config);
+    }
+
+    private static void AddRateLimit(this IServiceCollection services, IConfiguration config)
+    {
+        var myOptions = new MyRateLimitOptions();
+        config.GetSection("RateLimits").Bind(myOptions);
+        var fixedPolicy = "fixed";
+        services.AddRateLimiter(_ => _
+            .AddFixedWindowLimiter(policyName: fixedPolicy, options =>
+            {
+                options.PermitLimit = myOptions.PermitLimit;
+                options.Window = TimeSpan.FromSeconds(myOptions.Window);
+                options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                options.QueueLimit = myOptions.QueueLimit;
+            }));
     }
 
     private static void AddSwagger(this IServiceCollection services)

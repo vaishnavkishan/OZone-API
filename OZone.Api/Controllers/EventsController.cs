@@ -1,14 +1,21 @@
+using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using OZone.Api.Domain;
 using OZone.Api.Domain.Models;
 using OZone.Api.Integrations;
 using OZone.Api.Models;
 using OZone.Api.Services;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace OZone.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[EnableRateLimiting("fixed")]
 public class EventsController : ControllerBase
 {
     private readonly ILogger<EventsController> _logger;
@@ -28,6 +35,7 @@ public class EventsController : ControllerBase
     /// <param name="kind">Kind of events to return. 'upcoming', 'past'.</param>
     /// <returns>Returns filtered events if kind is provided. Otherwise returns all events.</returns>
     [HttpGet]
+    [EnableRateLimiting("fixed")]
     public async Task<IActionResult> Get(string? kind)
     {
         return Ok(await _eventService.Get(kind));
@@ -51,14 +59,67 @@ public class EventsController : ControllerBase
     /// <returns>Newly created event</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> Create(Event createEvent)
+    public async Task<IActionResult> Create(IEnumerable<Event> createEvent)
     {
-        return Ok(await _eventService.Create(createEvent));
+        var events = new List<Event>();
+        foreach (var _ in createEvent)
+        {
+            events.Add(await _eventService.Create(_));
+        }
+
+        return Ok(events);
+    }
+
+    [HttpPost("suggest/event")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> SuggestEvent(EventSuggestionRequest req)
+    {
+        var subs = await _eventService.GetSubscriptionsByEmail(req.Email);
+        var events = await _eventService.Get("upcoming");
+        string? subscribedEvents = null;
+        string? nonSubscribedEvents = null;
+
+        try
+        {
+            subscribedEvents = string.Join(',', subs.Select(x => x.Event.Name));
+            events = events.Except(subs.Select(x => x.Event));
+            nonSubscribedEvents = string.Join(',', events.Select(x => x.Name));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while parsing event names!");
+        }
+
+        StringBuilder prompt = new();
+        prompt.Append($"I am part of '{req.Community}' community.");
+        var totalSuggestions = 2;
+
+        if (!string.IsNullOrWhiteSpace(subscribedEvents))
+        {
+            prompt.Append($"I have attended [{subscribedEvents}] events in the past.");
+        }
+
+        prompt.Append(@$"which of the following event would you recommend? 
+            please select only {totalSuggestions} out of these [{nonSubscribedEvents}].
+            The output should be json array with name property. Json=output");
+
+        // var aiSuggestion = await _openAi.GetAiSuggestion(prompt.ToString());
+        var aiSuggestion = "\n\n[{\"name\":\"EF Core\"},{\"name\":\"DotNet API Design\"}]";
+        var serialized = JsonSerializer.Deserialize<List<SuggestedEventFromOpenAi>>(aiSuggestion,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        var suggestedEvents = new List<Event>();
+        foreach (var _ in serialized)
+        {
+            suggestedEvents.Add(await _eventService.GetByName(_.Name));
+        }
+
+        return Ok(suggestedEvents);
     }
 
     [HttpPost("suggest/topic")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> Suggest(TopicSuggestionRequest req)
+    public async Task<IActionResult> SuggestTopic(TopicSuggestionRequest req)
     {
         var prompt = @$"We are orgnaising an event for people from {req.Community} community, 
         please list some of the interesting topics on which the event can be organised for this community. 

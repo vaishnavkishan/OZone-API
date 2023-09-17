@@ -9,7 +9,9 @@ public interface IEventService
 {
     Task<IEnumerable<Event>> Get(string? kind);
     Task<Event> GetById(Guid id);
+    Task<Event?> GetByName(string name);
     Task<Event> Create(Event createEvent);
+    Task<IEnumerable<Subscription>> GetSubscriptionsByEmail(string email);
 }
 
 public class EventService : IEventService
@@ -41,6 +43,12 @@ public class EventService : IEventService
         return await _db.Events.FindAsync(id);
     }
 
+    public async Task<Event?> GetByName(string name)
+    {
+        var eventT=  _db.Events.AsEnumerable().Where(x => x.Name.Equals(name,StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+        return eventT;
+    }
+
     public async Task<Event> Create(Event createEvent)
     {
         var eventT = _db.Events.Add(createEvent);
@@ -63,5 +71,15 @@ public class EventService : IEventService
         {
             _logger.LogError(ex, "Could not send email notification!");
         }
+    }
+
+    public async Task<IEnumerable<Subscription>> GetSubscriptionsByEmail(string email)
+    {
+        var subs = _db.Subscriptions
+            .Include(x => x.User)
+            .Include(x => x.Event)
+            .Where(x => x.User.Email == email);
+
+        return subs.ToList();
     }
 }
