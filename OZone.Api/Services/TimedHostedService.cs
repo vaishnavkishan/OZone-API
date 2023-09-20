@@ -54,7 +54,7 @@ public class TimedHostedService : IHostedService, IDisposable
             {
                 tasks.Add(notificationService.SendReminderNotifications(subscription.Event, subscription.User.Email));
             }
-
+            
             Task.WaitAll(tasks.ToArray());
         }
 
