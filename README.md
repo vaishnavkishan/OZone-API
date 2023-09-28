@@ -1,3 +1,5 @@
+🎊 🎉 💻 😎 **Hackathon Code-A-Thon winning project** 😎 💻 🎉 🎊
+
 # OZone Event Wall
 This project is created as part of Hackathon Code-A-Thon.
 
