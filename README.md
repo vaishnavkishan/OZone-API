@@ -1,19 +1,64 @@
-# OZone
+# OZone Event Wall
+This project is created as part of Hackathon Code-A-Thon.
 
-#This is set up commit
+A simple portal to manage Events.
 
+## Rquirements:
+
+Event Wall is an application where you get to know about every event happening in every community. It has following features 
+1. Ability to register an upcoming event with details like
+	a. Event Name
+	b. Event Date
+	c. Mode  - Online / Offline / Hybrid
+	d. Mode details - Physical location or meeting info
+	e. Event details - Topics/Speakers or Workshop details
+	f. Person of Contact
+	g. Rules - How to participate, deadline
+	h. Community 
+	i. Event type - Internal/External
+2. When an event is registered, notifications are sent to different mediums, in certain intervals
+	a. Email
+	b. Google groups 
+3. When the event is completed, ability to 
+	a. Upload recordings 
+	b. Upload resources eg PPT, PDFs
+4. Visitor when lands on the page, is able to see
+	a. Upcoming events, subscribe to them, to be able to add details to calendar	
+b. Search for older events and get recordings and resources
+
+# Implemented Features
+### Specified in requirements
+1. Create Event
+2. Subscribe to Event
+3. Send notification on subscribing event
+4. Send notification on create event
+6. Send message to community Google Group (via email)
+7. Upload/download resources of past events
+8. Display upcoming/past event, search events (on UI)
+
+### Extra features
+1. Improve event name, topics and description with AI
+2. Personalised events suggestions based on AI
+3. Suggest events relevent to community for admin to create
+4. Send reminder email every day (configurable) to subscribed users
+
+# Instructions
+
+# EF
 ## Install EF commands in dotnet
 dotnet tool install --global dotnet-ef
 
+## Create or Update database to latest migration version
 dotnet ef database update
 
 ## Add migration
 dotnet ef migrations add InitialCreate
 
+# APIs
 ### Create Event
 http://localhost:5160/Events
 #### Request json
-{
+```{
     "name": "First Event",
     "date": "2023-09-16T06:35:25.471Z",
     "mode": 0,
@@ -29,11 +74,11 @@ http://localhost:5160/Events
     "type": 0,
     "tags": "fun, devs"
 }
-
+```
 
 # Data Setup
-## Events
-[
+## Create Events
+```[
 {
 "name": "EF core hands-on",
 "date": "2023-09-20T06:35:25.471",
@@ -48,7 +93,7 @@ http://localhost:5160/Events
 "community": "ozone@thoughtworks.com",
 "capacity": 100,
 "type": 1,
-"tags": "dotnet, devs, csharp",
+"tags": "dotnet, devs, csharp"
 },
 {
 "name": "Dotnet Api design",
@@ -80,8 +125,7 @@ http://localhost:5160/Events
 "community": "ozone@thoughtworks.com",
 "capacity": 123,
 "type": 0,
-"tags": "fun, devs, data",
-"subscriptions": []
+"tags": "fun, devs, data"
 },
 {
 "name": "Multi-threading in programming language",
@@ -132,3 +176,4 @@ http://localhost:5160/Events
 "tags": "qa, devs, ba, fun"
 }
 ]
+```
