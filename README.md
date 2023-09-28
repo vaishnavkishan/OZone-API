@@ -8,6 +8,9 @@ A simple portal to manage Events.
 ### Team
 Kishan, Venu, Theja, Shanthosh, Srini, Raju
 
+# Frontend repository
+https://github.com/vaishnavkishan/OZone-UI.git
+
 ## Rquirements
 
 Event Wall is an application where you get to know about every event happening in every community. It has following features 
