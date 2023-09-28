@@ -8,7 +8,7 @@ A simple portal to manage Events.
 ### Team
 Kishan, Venu, Theja, Shanthosh, Srini, Raju
 
-# Frontend repository
+### Frontend repository
 https://github.com/vaishnavkishan/OZone-UI.git
 
 ## Rquirements
