@@ -5,30 +5,33 @@ This project is created as part of Hackathon Code-A-Thon.
 
 A simple portal to manage Events.
 
-## Rquirements:
+### Team
+Kishan, Venu, Theja, Shanthosh, Srini, Raju
+
+## Rquirements
 
 Event Wall is an application where you get to know about every event happening in every community. It has following features 
 1. Ability to register an upcoming event with details like
-	a. Event Name
-	b. Event Date
-	c. Mode  - Online / Offline / Hybrid
-	d. Mode details - Physical location or meeting info
-	e. Event details - Topics/Speakers or Workshop details
-	f. Person of Contact
-	g. Rules - How to participate, deadline
-	h. Community 
-	i. Event type - Internal/External
-2. When an event is registered, notifications are sent to different mediums, in certain intervals
-	a. Email
-	b. Google groups 
-3. When the event is completed, ability to 
-	a. Upload recordings 
-	b. Upload resources eg PPT, PDFs
-4. Visitor when lands on the page, is able to see
-	a. Upcoming events, subscribe to them, to be able to add details to calendar	
+   	* Event Name
+	* Event Date
+	* Mode  - Online / Offline / Hybrid
+	* Mode details - Physical location or meeting info
+	* Event details - Topics/Speakers or Workshop details
+	* Person of Contact
+	* Rules - How to participate, deadline
+	* Community 
+	* Event type - Internal/External
+3. When an event is registered, notifications are sent to different mediums, in certain intervals
+	* Email
+	* Google groups 
+4. When the event is completed, ability to 
+	* Upload recordings 
+	* Upload resources eg PPT, PDFs
+5. Visitor when lands on the page, is able to see
+	* Upcoming events, subscribe to them, to be able to add details to calendar	
 b. Search for older events and get recordings and resources
 
-# Implemented Features
+## Implemented Features
 ### Specified in requirements
 1. Create Event
 2. Subscribe to Event
@@ -44,19 +47,22 @@ b. Search for older events and get recordings and resources
 3. Suggest events relevent to community for admin to create
 4. Send reminder email every day (configurable) to subscribed users
 
-# Instructions
+## Instructions
 
-# EF
-## Install EF commands in dotnet
-dotnet tool install --global dotnet-ef
+### EF
+Install EF commands in dotnet
 
-## Create or Update database to latest migration version
-dotnet ef database update
+`dotnet tool install --global dotnet-ef`
 
-## Add migration
-dotnet ef migrations add InitialCreate
+Create or Update database to latest migration version
 
-# APIs
+`dotnet ef database update`
+
+Add migration
+
+`dotnet ef migrations add InitialCreate`
+
+## APIs
 ### Create Event
 http://localhost:5160/Events
 #### Request json
